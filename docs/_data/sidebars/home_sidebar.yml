@@ -10,7 +10,7 @@ entries:
       title: Overview
       url: /
     - output: web,pdf
-      title: arg_navi_tools
+      title: arg_tools
       url: utils.html
     output: web
     title: arg_tools
