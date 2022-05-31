@@ -4,6 +4,9 @@ SRC = $(wildcard ./*.ipynb)
 
 all: arg_tools docs
 
+clean:
+	nbdev_clean_nbs
+
 arg_tools: $(SRC)
 	nbdev_build_lib
 	touch arg_tools
