@@ -63,7 +63,7 @@ docker run \
     -v "/home/$USER/arg_tools:/home/arg/arg_tools" \
     -w "/home/arg/arg_tools" \
     --user "root:root" \
-    --name argmm \
+    --name argtool \
     --network host \
     --privileged \
     --security-opt seccomp=unconfined \
