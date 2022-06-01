@@ -30,3 +30,11 @@ Fill me in please! Don't forget code examples:
 click ctrl and the url to open browser, then you should see local jupyter notebook!
 
 inside jupyter notebook, click .ipynp and run cells
+
+## How to push
+
+clear all notebook output
+
+in docker : $ `make`
+
+in your laptop, do your git push
