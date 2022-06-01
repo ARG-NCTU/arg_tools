@@ -29,17 +29,11 @@ from numpy.linalg import inv
 
 class camera_projection:
     def __init__(self):
-        self.id = '1DN5tiV_WII_aJM3DLijPnq5OLtI0HAq1'
-        self.filename = "ViperX_apriltags"
         self.camera_info_path = 'ViperX_apriltags/camera_info.yaml'
         self.img_path = 'ViperX_apriltags/rgb/'
         self.depth_path = 'ViperX_apriltags/depth/'
-        self.identity = np.identity(4)
         self.tag_size = 0.0415
         self.s = 0.5 * self.tag_size
-        self.joints = ['Joint_1_pose', 'Joint_2_pose',
-                       'Joint_3_pose', 'Joint_4_pose',
-                       'Joint_5_pose', 'Joint_6_pose']
 
     def read_camera_info(self):
         with open(self.camera_info_path, "r") as stream:
@@ -57,12 +51,12 @@ class camera_projection:
         #                           camera_cx, camera_cy]
 
     def read_images(self, idx):
-        self.img_path = self.img_path + str(idx)
-        self.depth_path = self.depth_path + str(idx)
+        self.img_path = self.img_path + str(idx) + '.png'
+        self.depth_path = self.depth_path + str(idx) + '.png'
         self.img = cv2.imread(self.img_path)
         self.gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         self.depth = cv2.imread(self.depth_path, -cv2.IMREAD_ANYDEPTH)
-        self.img_dst = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        self.img_dst = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)
 
     def apriltag_detection(self):
         print("[INFO] detecting AprilTags...")
@@ -74,17 +68,28 @@ class camera_projection:
 
     def solvePnP(self):
         img_pts = self.detection_results[0].corners.reshape(1,4,2)
-        obj_pt1 = [-s, -s, 0.0]
-        obj_pt2 = [ s, -s, 0.0]
-        obj_pt3 = [ s,  s, 0.0]
-        obj_pt4 = [-s,  s, 0.0]
+        obj_pt1 = [-self.s, -self.s, 0.0]
+        obj_pt2 = [ self.s, -self.s, 0.0]
+        obj_pt3 = [ self.s,  self.s, 0.0]
+        obj_pt4 = [-self.s,  self.s, 0.0]
         obj_pts = obj_pt1 + obj_pt2 + obj_pt3 + obj_pt4
         obj_pts = np.array(obj_pts).reshape(4,3)
         # print(img_pts)
         # print(obj_pts)
-        _, r_vec, t_vec = cv2.solvePnP(obj_pts, img_pts, self.camera_matrix,
+        _, self.r_vec, self.t_vec = cv2.solvePnP(obj_pts, img_pts, self.camera_matrix,
                                        self.dist_coeffs, flags=cv2.SOLVEPNP_ITERATIVE)
-        R_mat, _ = cv2.Rodrigues(r_vec)
-        T = np.hstack((R_mat, t_vec)).reshape(3,4)
+        R_mat, _ = cv2.Rodrigues(self.r_vec)
+        T = np.hstack((R_mat, self.t_vec)).reshape(3,4)
         tag_pose = np.vstack((T, [0,0,0,1])).reshape(4,4)
-        dist = np.linalg.norm(t_vec)
+        dist = np.linalg.norm(self.t_vec)
+    def draw_point(self, tag_2_inv, base2joint):
+        # --------------- project a point ---------------
+        tag2joint = np.matmul(tag_2_inv, base2joint)
+        obj_pts = np.array([tag2joint[0,3], tag2joint[1,3], tag2joint[2,3]]).reshape(1,3)
+        proj_img_pts, jac = cv2.projectPoints(obj_pts, self.r_vec, self.t_vec,
+                                              self.camera_matrix, self.dist_coeffs)
+        proj_img_pts = np.array(proj_img_pts).reshape(2,1)
+        # --------------- draw a point ---------------
+        draw_image = cv2.circle(self.img_dst, (int(proj_img_pts[0]), int(proj_img_pts[1])),
+                                radius=5, color=(255, 0, 0), thickness=-1)
+        return draw_image
