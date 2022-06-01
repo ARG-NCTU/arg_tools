@@ -1,6 +1,3 @@
-source /opt/ros/noetic/setup.bash
-export ROS_IP=127.0.0.1
-
 jupyter notebook \
     --NotebookApp.allow_origin='https://colab.research.google.com' \
     --NotebookApp.token='assistive' \
