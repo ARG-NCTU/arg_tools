@@ -26,6 +26,7 @@ RUN echo "${USER}:111111" | chpasswd
 RUN apt-get -o Acquire::ForceIPv4=true update && apt-get -yq dist-upgrade \
     && apt-get -o Acquire::ForceIPv4=true install -yq --no-install-recommends \
     locales \
+    cmake\
     make \
     git \
     vim \
