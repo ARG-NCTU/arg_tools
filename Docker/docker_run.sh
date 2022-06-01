@@ -30,7 +30,14 @@ if dpkg --compare-versions 19.03 gt "$DOCKER_VER"; then
     fi
     DOCKER_OPTS="$DOCKER_OPTS --runtime=nvidia"
 else
-    DOCKER_OPTS="$DOCKER_OPTS --gpus all"
+    if [ "$1" == "gpu" -o "$1" == "GPU" ]; then
+        DOCKER_OPTS="$DOCKER_OPTS --gpus all"
+        echo "gpus all"
+    elif [ "$1" == "cpu" -o "$1" == "CPU" ]; then
+        echo "no gpus"
+    else 
+        echo "Please choose gpu or cpu!(default is cpu)"
+    fi
 fi
 
 # Prevent executing "docker run" when xauth failed.
@@ -55,8 +62,8 @@ docker run \
     -v "/var/run/docker.sock:/var/run/docker.sock" \
     -v "/home/$USER/arg_tools:/home/arg/arg_tools" \
     -w "/home/arg/arg_tools" \
-    --name argmm \
     --user "root:root" \
+    --name argmm \
     --network host \
     --privileged \
     --security-opt seccomp=unconfined \
