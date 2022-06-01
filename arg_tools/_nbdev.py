@@ -6,7 +6,8 @@ index = {"gdown_unzip": "00_utils.ipynb",
          "camera_projection": "01_camera_projection.ipynb"}
 
 modules = ["utils.py",
-           "camera_projection.py"]
+           "camera_projection.py",
+           "video2picture.py"]
 
 doc_url = "https://ARG-NCTU.github.io/arg_tools/"
 
