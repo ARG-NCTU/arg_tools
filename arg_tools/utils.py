@@ -28,9 +28,9 @@ def gdown_unzip(id, filename):
 def pose_dis(pose_1, pose_2):
     """Compute distance between pose_1 and pose_2
     """
-    x = pose_1.target_pose.position.x - pose_2.target_pose.position.x
-    y = pose_1.target_pose.position.y - pose_2.target_pose.position.y
-    z = pose_1.target_pose.position.z - pose_2.target_pose.position.z
+    x = pose_1[0] - pose_2[0]
+    y = pose_1[1] - pose_2[1]
+    z = pose_1[2] - pose_2[2]
 
     dis = math.sqrt(x**2+y**2+z**2)
 
@@ -39,21 +39,28 @@ def pose_dis(pose_1, pose_2):
 def waypoint(current_pose, Target_pose):
     """Generate a list of way points from current pose to target pose
 
-    Input : current pose, target pose
-    Return : a list of way points
+    Input : current pose, target pose : list [x_pos, y_pos, z_pos, x_ori, y_ori, z_ori, w_ori]
+    Return : a list of way points [x_pos, y_pos, z_pos, x_ori, y_ori, z_ori, w_ori]
 
     """
     waypoint_list = []
     factor = 0.5
-    sub_pose = current_pose.copy()
+    sub_pose = copy.deepcopy(current_pose)
 
     # threshold : distance between sub_pose and target_pose = 0.05 meter
-    while pose_dis(current_pose, target_pose) > 0.05:
-        sub_pose.target_pose.position.x = (sub_pose.target_pose.position.x + Target_pose.target_pose.position.x)*factor
-        sub_pose.target_pose.position.y = (sub_pose.target_pose.position.y + Target_pose.target_pose.position.y)*factor
-        sub_pose.target_pose.position.z = (sub_pose.target_pose.position.z + Target_pose.target_pose.position.z)*factor
+    dis = pose_dis(sub_pose, Target_pose)
+    while dis > 0.05:
+        sub_pose[0] = (sub_pose[0] + Target_pose[0])*factor
+        sub_pose[1] = (sub_pose[1] + Target_pose[1])*factor
+        sub_pose[2] = (sub_pose[2] + Target_pose[2])*factor
+        sub_pose[3] = Target_pose[3]
+        sub_pose[4] = Target_pose[4]
+        sub_pose[5] = Target_pose[5]
+        sub_pose[6] = Target_pose[6]
 
-        waypoint_list.append(sub_pose.copy())
+        dis = pose_dis(sub_pose, Target_pose)
+
+        waypoint_list.append(copy.deepcopy(sub_pose))
 
     waypoint_list.append(Target_pose)
 
