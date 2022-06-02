@@ -40,7 +40,7 @@ def waypoint(current_pose, Target_pose):
     """Generate a list of way points from current pose to target pose
 
     Input : current pose, target pose : list [x_pos, y_pos, z_pos, x_ori, y_ori, z_ori, w_ori]
-    Return : a list of way points [x_pos, y_pos, z_pos, x_ori, y_ori, z_ori, w_ori]
+    Return : a list of way points
 
     """
     waypoint_list = []
