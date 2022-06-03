@@ -82,9 +82,20 @@ class camera_projection:
         obj_pts = np.array(obj_pts).reshape(4,3)
         # print(img_pts)
         # print(obj_pts)
-        _, r_vec, t_vec = cv2.solvePnP(obj_pts, img_pts, self.camera_matrix,
+        _, self.r_vec, self.t_vec = cv2.solvePnP(obj_pts, img_pts, self.camera_matrix,
                                        self.dist_coeffs, flags=cv2.SOLVEPNP_ITERATIVE)
-        R_mat, _ = cv2.Rodrigues(r_vec)
-        T = np.hstack((R_mat, t_vec)).reshape(3,4)
+        R_mat, _ = cv2.Rodrigues(self.r_vec)
+        T = np.hstack((R_mat, self.t_vec)).reshape(3,4)
         tag_pose = np.vstack((T, [0,0,0,1])).reshape(4,4)
-        dist = np.linalg.norm(t_vec)
+        dist = np.linalg.norm(self.t_vec)
+    def draw_point(img, tag_2_inv, base2joint):
+        # --------------- project a point ---------------
+        tag2joint = np.matmul(tag_2_inv, base2joint)
+        obj_pts = np.array([tag2joint[0,3], tag2joint[1,3], tag2joint[2,3]]).reshape(1,3)
+        proj_img_pts, jac = cv2.projectPoints(obj_pts, self.r_vec, self.t_vec,
+                                              self.camera_matrix, self.dist_coeffs)
+        proj_img_pts = np.array(proj_img_pts).reshape(2,1)
+        # --------------- draw a point ---------------
+        draw_image = cv2.circle(img, (int(proj_img_pts[0]), int(proj_img_pts[1])),
+                                radius=5, color=(255, 0, 0), thickness=-1)
+        return draw_image
