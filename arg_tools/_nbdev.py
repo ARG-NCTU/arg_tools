@@ -2,7 +2,7 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"gdown_unzip": "00_utils.ipynb",
+index = {"gdown_unzip": "02_video2picture.ipynb",
          "pose_dis": "00_utils.ipynb",
          "waypoint": "00_utils.ipynb",
          "camera_projection": "01_camera_projection.ipynb"}
